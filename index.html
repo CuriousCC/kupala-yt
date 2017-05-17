@@ -16,8 +16,12 @@ var grafix = gameCanvas.getContext("2d");
 var player = new Object("images/characters_45b.png", 10, 326, 20, 27);
 var qblock = new Object("images/qblock.png", 452, 239, 30, 30);
 var stube = new Object ("images/stube.png", 796, 298, 55, 57);
+var maxTile = 70//+15+67+60;
 var tile = new Array ();
-//var ground = 44;
+	for (var i = 0; i<=maxTile; i++){
+		tile[i] = new Object ("images/brick.png", 0, 356, 29, 43);
+	}
+
 
 var isLeft = false;
 var isRight = false;
@@ -28,16 +32,16 @@ player.Weight = 0.1;
 
 //EVENTS
 function keyDown(e){
-	//if (String.fromCharCode(e.keyCode) ==="%") player.X+=5;
+	
 	if(e.keyCode ==39) isLeft = true;
 	if(e.keyCode==37) isRight = true;
-	if(e.keyCode==38 && e.keyCode==32) isSpace = true;
+	if(e.keyCode==38 || e.keyCode==32) isSpace = true;
 };
-function keyUp(e){;
+function keyUp(e){
 	if(e.keyCode ==39) isLeft = false;
 	if(e.keyCode==37) isRight = false;	
-	if(e.keyCode==38 && e.keyCode == 32) isSpace = false;
-	}
+	if(e.keyCode==38 || e.keyCode == 32) isSpace = false;
+	};
 
 
 
@@ -54,15 +58,21 @@ player.Y += player.VelocityY;
 if(isLeft) player.VelocityX= 3;
 if(isRight) player.VelocityX = -3;
 if(!isLeft && !isRight && player.VelocityY==0) player.VelocityX = 0;
+if (isSpace) player.VelocityY = -5;
 
 if (player.VelocityY<player.Gravity) player.VelocityY+=player.Weight;
 
-
+for (var i =0; i<=maxTile; i++){
+	if (player.isColliding(tile[i]) && player.Y + player.Height < tile[i].Y + player.VelocityY) 
+	{
+		player.Y = tile[i].Y - player.Height; 
+		player.VelocityY = 0; 
+	}
+}
 if (player.isColliding(stube) && player.Y + player.Height < stube.Y + player.VelocityY) {player.Y = stube.Y - player.Height; player.VelocityY = 0; }
 
-if (isSpace && player.VelocityY = 0) {
-	player.VelocityY = -5;
-}
+
+
 
 //attempt for ground collision
 //if (player.Y >= gameCanvas.height-player.height-ground) player.Y = gameCanvas.height - player.height-ground; player.VelocityY = 0;
@@ -71,10 +81,11 @@ if (isSpace && player.VelocityY = 0) {
 
 //RENDERING
 	grafix.clearRect(0,0, gameCanvas.width, gameCanvas.height);
-	grafix.drawImage(player.Sprite, player.X, player.Y);
+	
 	grafix.drawImage(qblock.Sprite, qblock.X, qblock.Y);
 	grafix.drawImage(stube.Sprite, stube.X, stube.Y);
-
+	for (var i =0; i<=maxTile; i++) grafix.drawImage(tile[i].Sprite, tile[i].X, tile[i].Y);
+	grafix.drawImage(player.Sprite, player.X, player.Y);
 	setTimeout (MainLoop, 1000/60);
 }
 
