@@ -1,0 +1,106 @@
+<!--From YT tutorial: Let's Make a Platformer In JavaScript - https://www.youtube.com/watch?v=hzjNbdfI_4w&list=PL45343689EAC156D2&index=1 -->
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>kupala-yt-game</title>
+</head>
+<body onkeydown="keyDown (event)" onkeyup="keyUp(event)" >
+<canvas id = "graphics" width="900" height="400" style="position: absolute; top: 0; left: 0; background-image: url(images/1-1.png); "></canvas>
+<script>
+//VARIABLES
+var gameCanvas = document.getElementById("graphics");
+var grafix = gameCanvas.getContext("2d");
+var player = new Object("images/characters_45b.png", 10, 326, 20, 27);
+var qblock = new Object("images/qblock.png", 452, 239, 30, 30);
+var stube = new Object ("images/stube.png", 796, 298, 55, 57);
+var tile = new Array ();
+//var ground = 44;
+
+var isLeft = false;
+var isRight = false;
+var isSpace = false;
+
+player.Gravity = 20;
+player.Weight = 0.1;
+
+//EVENTS
+function keyDown(e){
+	//if (String.fromCharCode(e.keyCode) ==="%") player.X+=5;
+	if(e.keyCode ==39) isLeft = true;
+	if(e.keyCode==37) isRight = true;
+	if(e.keyCode==38 && e.keyCode==32) isSpace = true;
+};
+function keyUp(e){;
+	if(e.keyCode ==39) isLeft = false;
+	if(e.keyCode==37) isRight = false;	
+	if(e.keyCode==38 && e.keyCode == 32) isSpace = false;
+	}
+
+
+
+//MAINLOOP
+MainLoop();
+function MainLoop(){
+
+//PRE VAR ADJUSTMENTS
+player.X += player.VelocityX;
+player.Y += player.VelocityY;
+
+
+//LOGIC
+if(isLeft) player.VelocityX= 3;
+if(isRight) player.VelocityX = -3;
+if(!isLeft && !isRight && player.VelocityY==0) player.VelocityX = 0;
+
+if (player.VelocityY<player.Gravity) player.VelocityY+=player.Weight;
+
+
+if (player.isColliding(stube) && player.Y + player.Height < stube.Y + player.VelocityY) {player.Y = stube.Y - player.Height; player.VelocityY = 0; }
+
+if (isSpace && player.VelocityY = 0) {
+	player.VelocityY = -5;
+}
+
+//attempt for ground collision
+//if (player.Y >= gameCanvas.height-player.height-ground) player.Y = gameCanvas.height - player.height-ground; player.VelocityY = 0;
+
+//POST VAR ADJUSTMENTS
+
+//RENDERING
+	grafix.clearRect(0,0, gameCanvas.width, gameCanvas.height);
+	grafix.drawImage(player.Sprite, player.X, player.Y);
+	grafix.drawImage(qblock.Sprite, qblock.X, qblock.Y);
+	grafix.drawImage(stube.Sprite, stube.X, stube.Y);
+
+	setTimeout (MainLoop, 1000/60);
+}
+
+function Object (img, x, y, width, height){
+	this.Sprite = new Image();
+	this.Sprite.src = img;
+	this.X = x;
+	this.Y = y;
+	this.Width = width;
+	this.Height = height;
+	this.PreviousX;
+	this.PreviousY;
+	this.VelocityX=0;
+	this.VelocityY=0;
+	this.Gravity = 0;
+	this.Weight = 0;
+	this.isColliding = function(obj){
+		if (this.X > obj.X + obj.Width) return false;
+		if (this.X + this.Width < obj.X) return false;
+		if (this.Y > obj.Y + obj.Height) return false;
+		if (this.Y + this.Height < obj.Y) return false;
+		return true;
+	}
+
+}
+
+</script>
+</body>
+</html>
